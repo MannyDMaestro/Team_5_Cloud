@@ -1,2 +1,2 @@
-# Team_5_Cloud
-This repository is the final project for team 5 in the BAH Cloud Engineering course. Hold your applause until the end of this README file.
+<h1 align="center">Hi 👋, We are Team 5</h1>
+<h3 align="center">We would like to gladly present to you our last project for this course. This repository will showcase and demo of your aggregated knowledge throughout the Cloud Engineering program. So please hold your applause until the end.</h3>
