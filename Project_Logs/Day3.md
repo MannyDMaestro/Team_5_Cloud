@@ -3,7 +3,7 @@ At this point of the project, We decided to construct our infrastructure through
 Once our Jenkins instance was up and running, we decided to link the Jenkins master node to our team’s git repository.
 
 
-# Configure Git pulgin on Jenkins
+### Configure Git pulgin on Jenkins
 Git is one of the most popular tools for version control system. you can pull code from git repositories using jenkins if you use github plugin. 
 
 
