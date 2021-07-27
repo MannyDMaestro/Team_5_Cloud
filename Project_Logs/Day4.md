@@ -2,7 +2,7 @@
 
 We will use maven for building and managing our Java-based project. Maven is a powerful project management tool that is based on POM (project object model). It is used for projects build, dependency and documentation. Maven is a powerful project management tool that is based on POM (project object model). It is used for projects build, dependency and documentation.
 
-How maven works?
+
 ![image](https://user-images.githubusercontent.com/67617750/127207933-4dafce23-d0aa-4dbf-9656-7551d7bbe2fb.png)
 
 Core Concepts of Maven:
