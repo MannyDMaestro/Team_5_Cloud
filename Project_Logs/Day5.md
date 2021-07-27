@@ -112,7 +112,7 @@ goto tomcat home directory and Add below users to conf/tomcat-users.xml file
      - Copy from: `My_First_Maven_Build`
      
    - *Source Code Management:*
-      - Repository: `https://github.com/yankils/hello-world.git`
+      - Repository: `https://github.com/MannyDMaestro/helloapp5star.git`
       - Branches to build : `*/master`  
    - *Poll SCM* :      - `* * * *`
 
