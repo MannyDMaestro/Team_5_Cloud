@@ -47,65 +47,67 @@ The CloudFormation template we deployed earlier in the previous steps created an
 
 The CloudFormation template deployed deployed a Jenkins server on to an on-demand instance within our VPC and configured an Application Load Balancer (ALB) to proxy requests from the public Internet to the server. The DNS name for the ALB is located in the Output tab of our CloudFormation stack. We will point our web browser to this DNS name and sign in using spotcicdworkshop as the Username and the password that you supplied to the CloudFormation template as the password.
 
-***
+****
+
+
+****
 
 ##### Configure the EC2 Fleet Jenkins Plugin
 
-The EC2 Fleet Jenkins Plugin was installed on the Jenkins server during the CloudFormation deployment - but now the plugin needs to be configured. You’ll first need to supply the IAM Access Key ID and Secret Key that you created so that the plugin can find your Spot Fleet request. You’ll then need to get the plugin to Launch slave agents via SSH and provide valid SSH credentials (don’t forget to consider how Host Key Verification should be set when using Spot instances).
+The EC2 Fleet Jenkins Plugin was installed on the Jenkins server during the CloudFormation deployment - but now the plugin needs to be configured. First we need to supply the IAM Access Key ID and Secret Key that we created so that the plugin can find our Spot Fleet request. We then need to get the plugin to Launch slave agents via SSH and provide valid SSH credentials.
 
-When configuring the plugin, think about how you could force build processes to run on the spot instances (use the spot-agents label), and consider how you can verify that the fleet scales out when there is a backlog of build jobs waiting to be processed.
+#### Procedure
+1. From the Jenkins home screen, click on the Manage Jenkins link on the left side menu, and then the Configure System link;
+2. Scroll all the way down to the bottom of the page and under the Cloud section, click on the Add a new cloud button, followed by the Amazon SpotFleet option
+3. Under the Spot Fleet Configuration section, click on the Add button next to the AWS Credentials [sic] dropdown, then click on the Jenkins option. This will pop up a new Jenkins Credentials Provider: Jenkins sub-form. Fill out the form as follows:
+4. Change the Kind to AWS Credentials
+5. Change the Scope to System (Jenkins and nodes only) – you don’t want your builds to have access to these credentials!
+6. At the ID field, enter SpotCICDWorkshopJenkins;
+7. At the Access Key ID and Secret Access Key fields, enter in the Access key and secret access key information;
+8. Click on the Add button;
+9. Once the sub-form disappears, select your Access Key ID from the AWS Credentials dropdown - the plugin will then issue a request to the AWS APIs and populate the list of regions;
+10. Select eu-west-1 from the Region dropdown - the plugin will now attempt to obtain a list of Spot Fleet requests made in the selected region;
+11. Select the Request Id of the Spot Fleet that was created earlier from the Spot Fleet dropdown (though it might already be selected) and then select the Launch slave agents via SSH option from the Launcher dropdown - this should reveal additional SSH authentication settings
+12. Click the Add button next to the Credentials dropdown and select the Jenkins option. This will pop up another Jenkins Credentials Provider: Jenkins sub-form. Fill out the form as follows:
+13. Change the Kind to SSH Username with private key;
+14. Change the Scope to System (Jenkins and nodes only)
+15. At the Username field, enter ec2-user
+16. For the Private Key, select the Enter directly radio button. Open the .pem file and copy the contents of the file to the Key field including the BEGIN RSA PRIVATE KEY and END RSA PRIVATE KEY fields
+17. Click on the Add button.
+18. Select the ec2-user option from the Credentials dropdown;
+19. Given that Spot instances will have a random SSH host fingerprint, select the Non verifying Verification Strategy option from the Host Key Verification Strategy dropdown;
+20. Mark the Connect Private checkbox to ensure that your Jenkins Master will always communicate with the Agents via their internal VPC IP addresses
+21. Change the Label field to be spot-agents - you’ll shortly reconfigure your build job to run on slave instances featuring this label;
+22. Set the Max Idle Minutes Before Scaledown to 5. There’s no need to keep a build agent running for too much longer than it’s required;
+23. Change the Maximum Cluster Size from 1 to 2 (so that you can test fleet scale-out);
+24. Finally, click on the Save button.
+25. Within sixty-seconds, the Jenkins Slave Agent should have been installed on to the Spot instance that was launched by our Spot fleet; you should see an EC2 instance ID appear underneath the Build Executor Status section on the left side of the Jenkins user interface. Underneath that, you should see that there is a single Build Executor on this host, which is in an idle state.
 
- Click to reveal detailed instructions
-From the Jenkins home screen, click on the Manage Jenkins link on the left side menu, and then the Configure System link;
-Scroll all the way down to the bottom of the page and under the Cloud section, click on the Add a new cloud button, followed by the Amazon SpotFleet option;
-Under the Spot Fleet Configuration section, click on the Add button next to the AWS Credentials [sic] dropdown, then click on the Jenkins option. This will pop up a new Jenkins Credentials Provider: Jenkins sub-form. Fill out the form as follows:
-Change the Kind to AWS Credentials;
-Change the Scope to System (Jenkins and nodes only) – you don’t want your builds to have access to these credentials!
-At the ID field, enter SpotCICDWorkshopJenkins;
-At the Access Key ID and Secret Access Key fields, enter in the information that you gathered earlier;
-Click on the Add button;
-Once the sub-form disappears, select your Access Key ID from the AWS Credentials dropdown - the plugin will then issue a request to the AWS APIs and populate the list of regions;
-Select eu-west-1 from the Region dropdown - the plugin will now attempt to obtain a list of Spot Fleet requests made in the selected region;
-Select the Request Id of the Spot Fleet that you created earlier from the Spot Fleet dropdown (though it might already be selected) and then select the Launch slave agents via SSH option from the Launcher dropdown - this should reveal additional SSH authentication settings;
-Click the Add button next to the Credentials dropdown and select the Jenkins option. This will pop up another Jenkins Credentials Provider: Jenkins sub-form. Fill out the form as follows:
-Change the Kind to SSH Username with private key;
-Change the Scope to System (Jenkins and nodes only) – you also don’t want your builds to have access to these credentials;
-At the Username field, enter ec2-user;
-For the Private Key, select the Enter directly radio button. Open the .pem file that you downloaded during the workshop setup in a text editor and copy the contents of the file to the Key field including the BEGIN RSA PRIVATE KEY and END RSA PRIVATE KEY fields;
-Click on the Add button.
-Select the ec2-user option from the Credentials dropdown;
-Given that Spot instances will have a random SSH host fingerprint, select the Non verifying Verification Strategy option from the Host Key Verification Strategy dropdown;
-Mark the Connect Private checkbox to ensure that your Jenkins Master will always communicate with the Agents via their internal VPC IP addresses (in real-world scenarios, your build agents would likely not be publicly addressable);
-Change the Label field to be spot-agents - you’ll shortly reconfigure your build job to run on slave instances featuring this label;
-Set the Max Idle Minutes Before Scaledown to 5. As AWS launched per-second billing in 2017, there’s no need to keep a build agent running for too much longer than it’s required;
-Change the Maximum Cluster Size from 1 to 2 (so that you can test fleet scale-out);
-Finally, click on the Save button.
-Within sixty-seconds, the Jenkins Slave Agent should have been installed on to the Spot instance that was launched by your Spot fleet; you should see an EC2 instance ID appear underneath the Build Executor Status section on the left side of the Jenkins user interface. Underneath that, you should see that there is a single Build Executor on this host, which is in an idle state.
+#### Reconfigure our build jobs to use the new spot instance(s)
 
-RECONFIGURE YOUR BUILD JOBS TO USE THE NEW SPOT INSTANCE(S)
-As alluded to in the previous section, you’ll need to reconfigure your build jobs so that they are executed on the build agents running in your Spot fleet (again, use the spot-agents label). In addition, configure each job to execute concurrent builds if necessary - this will help you in testing the scale-out of your fleet.
+As alluded to in the previous section, we need to reconfigure our build jobs so that they are executed on the build agents running in our Spot fleet (again, use the spot-agents label). In addition, configure each job to execute concurrent builds if necessary - this will help in testing the scale-out of our fleet.
 
- Click to reveal detailed instructions
-Go back to the Jenkins home screen and repeat the following for each of the five Apache build projects that are configured in your Jenkins deployment:
-Click on the title of the build job and then click on the Configure link toward the left side of the screen;
-In the General section, click on the Execute concurrent builds if necessary checkbox and the Restrict where this project can be run checkbox. Next, enter spot-agents as the Label Expression (Note: if you select the auto-complete option instead of typing out the full label, Jenkins will add a space to the end of the label - be sure to remove any trailing spaces from the label before proceeding);
-Click on the Save button towards the bottom of the screen.
+##### Procedure
+1. Go back to the Jenkins home screen and repeat the following for each of the Apache build projects that are configured in your Jenkins deployment:
+2. Click on the title of the build job and then click on the Configure link toward the left side of the screen
+3. In the General section, click on the Execute concurrent builds if necessary checkbox and the Restrict where this project can be run checkbox. Next, enter spot-agents as the Label Expression (Note: if you select the auto-complete option instead of typing out the full label, Jenkins will add a space to the end of the label - be sure to remove any trailing spaces from the label before proceeding);
+4. Click on the Save button towards the bottom of the screen.
 
 
-### Configure Git pulgin on Jenkins
+#### Configure Git pulgin on Jenkins
 Git is one of the most popular tools for version control system. you can pull code from git repositories using jenkins if you use github plugin. We will use our git repository in our CI/CD pipeline for the project. Continuous Integration works by pushing small code chunks to our application’s codebase hosted in a Git repository, and to every push, run a pipeline of scripts to build, test, and validate the code changes before merging them into the main branch. Continuous Delivery and Deployment consist of a step further CI, deploying our application to production at every push to the default branch of the repository.
 
 
-#### Prerequisites
+##### Prerequisites
 1. Jenkins server 
 
-#### Install Git on Jenkins server
+##### Install Git on Jenkins server
 1. Install git packages on jenkins server
    ```sh
    yum install git -y
    ```
 
-#### Setup Git on jenkins console
+##### Setup Git on jenkins console
 - Install git plugin without restart  
   - `Manage Jenkins` > `Jenkins Plugins` > `available` > `github`
 
@@ -136,22 +138,6 @@ Git is one of the most popular tools for version control system. you can pull co
    OpenJDK Runtime Environment (build 1.8.0_151-b12)
    OpenJDK 64-Bit Server VM (build 25.151-b12, mixed mode)
    ```
-
-   ### Accessing Jenkins
-   By default jenkins runs at port `8080`, You can access jenkins at
-   ```sh
-   http://YOUR-SERVER-PUBLIC-IP:8080
-   ```
-  #### Configure Jenkins
-- The default Username is `admin`
-- Grab the default password 
-- Password Location:`/var/lib/jenkins/secrets/initialAdminPassword`
-- `Skip` Plugin Installation; _We can do it later_
-- Change admin password
-   - `Admin` > `Configure` > `Password`
-- Configure `java` path
-  - `Manage Jenkins` > `Global Tool Configuration` > `JDK`  
-- Create another admin user id
 
 ### Test Jenkins Jobs
 1. Create “new item”
