@@ -1,4 +1,4 @@
-### Project Log Day 3
+## Project Log Day 3
 At this point of the project, We decided to construct our infrastructure through CloudFormation. Our infrastructure focused primarily on high availability and fault tolerance with regard to our CI/CD pipeline for the Minecraft application. 
 
 #### CloudFormation Stack Creation Procedure
@@ -13,10 +13,13 @@ At this point of the project, We decided to construct our infrastructure through
 9. Click on the Next button;
 10. Finally at the Review screen, verify your settings, mark the I acknowledge that AWS CloudFormation might create IAM resources with custom names checkbox and then click on the Create button. Wait for the stack to complete provisioning, which should take a couple of minutes.
 
+
+### Jenkins
+Jenkins is a self-contained Java-based program, ready to run out-of-the-box, with packages for Windows, Mac OS X and other Unix-like operating systems. As an extensible automation server, Jenkins can be used as a simple CI server or turned into the continuous delivery hub for any project. We will deploy Jenkins build agents and our test environments on Spot instances at a fraction of the cost of on-demand instances. Once our Jenkins instance was up and running, we will link the Jenkins master node to our team’s git repository.
+
 ### Configure Git pulgin on Jenkins
 Git is one of the most popular tools for version control system. you can pull code from git repositories using jenkins if you use github plugin. We will use our git repository in our CI/CD pipeline for the project. Continuous Integration works by pushing small code chunks to our application’s codebase hosted in a Git repository, and to every push, run a pipeline of scripts to build, test, and validate the code changes before merging them into the main branch. Continuous Delivery and Deployment consist of a step further CI, deploying our application to production at every push to the default branch of the repository.
 
-We will deploy Jenkins build agents and our test environments on Spot instances at a fraction of the cost of on-demand instances. Once our Jenkins instance was up and running, we will link the Jenkins master node to our team’s git repository.
 
 #### Prerequisites
 1. Jenkins server 
