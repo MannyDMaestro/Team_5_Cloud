@@ -13,13 +13,13 @@ Core Concepts of Maven:
 5. Build Plugins: Build plugins are used to perform specific goal. you can add a plugin to the POM file. Maven has some standard plugins you can use, and you can also implement your own in Java.
 
 
-# First we wanted to test a Jenkins build with a sample Maven hello world project. 
-# *Jenkins Job name:* `My_First_Maven_Build`
+### First we wanted to test a Jenkins build with a sample Maven hello world project. 
+### *Jenkins Job name:* `My_First_Maven_Build`
 
 We know how to work with Git and Jenkins independently. We asked ourselves, what if you want to collaborate these two? And that is exactly what we ended up doing.
 
-### Procedure
-#### Pre-requisites
+#### Procedure
+##### Pre-requisites
 
 1. Jenkins server 
 
