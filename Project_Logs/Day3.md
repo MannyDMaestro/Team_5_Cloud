@@ -138,6 +138,9 @@ Git is one of the most popular tools for version control system. you can pull co
    OpenJDK Runtime Environment (build 1.8.0_151-b12)
    OpenJDK 64-Bit Server VM (build 25.151-b12, mixed mode)
    ```
+#### Configure Jenkins`
+- Configure `java` path
+  - `Manage Jenkins` > `Global Tool Configuration` > `JDK` 
 
 ### Test Jenkins Jobs
 1. Create “new item”
