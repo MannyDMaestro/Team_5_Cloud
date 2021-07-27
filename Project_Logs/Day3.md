@@ -21,7 +21,7 @@ By default, all builds will be executed on the same instance that Jenkins is run
 
 To address these behaviours, Jenkins provides the capability to execute builds on external hosts (called build agents). Further, AWS provides a Jenkins plugin to allow Jenkins to scale out a fleet of EC2 instances in order to execute build jobs on.
 
-### Povision a Spot fleet for build agents
+#### Provision a Spot fleet for build agents
 Before configuring the EC2 Fleet Jenkins Plugin, we will create a Spot Fleet that will be used by the plugin to perform our application builds. 
 
 1. Go to the EC2 console and click on the Spot Requests option from the left frame (or click here);
@@ -34,22 +34,22 @@ Before configuring the EC2 Fleet Jenkins Plugin, we will create a Spot Fleet tha
 8. Review the fleet request as a glance section - it should indicate that the Fleet strength is Strong as a result of being able to draw instances from 12 instance pools, and your Estimated price should indicate that you’re expecting to make a 70% saving compared to the cost of equivalent on-demand resources;
 9. Lastly, click on the Launch button. Make a note of the Request ID of the Spot Fleet that you’ve just created.
 
-### Create a secret key and access key for the plugin
+#### Create a secret key and access key for the plugin
 
 The CloudFormation template we deployed earlier in the previous steps created an IAM User called SpotCICDWorkshopJenkins. Jenkins will use this IAM User to control the spot fleet used for our build slaves. Generate a secret key and access key for this user.
 
-### Procedure
+##### Procedure
 1. Go to the IAM console and click on the Users option from the left frame (or click here);
 2. Click on the SpotCICDWorkshopJenkins user;
 3. Click on the Security credentials tab, then click on the Create access key button – Make a note of the Access key ID and Secret access key, then click the Close button.
 
-### Sign into Jenkins Server
+#### Sign into Jenkins Server
 
 The CloudFormation template deployed deployed a Jenkins server on to an on-demand instance within our VPC and configured an Application Load Balancer (ALB) to proxy requests from the public Internet to the server. The DNS name for the ALB is located in the Output tab of our CloudFormation stack. We will point our web browser to this DNS name and sign in using spotcicdworkshop as the Username and the password that you supplied to the CloudFormation template as the password.
 
 ***
 
-### Configure the EC2 Fleet Jenkins Plugin
+##### Configure the EC2 Fleet Jenkins Plugin
 
 The EC2 Fleet Jenkins Plugin was installed on the Jenkins server during the CloudFormation deployment - but now the plugin needs to be configured. You’ll first need to supply the IAM Access Key ID and Secret Key that you created so that the plugin can find your Spot Fleet request. You’ll then need to get the plugin to Launch slave agents via SSH and provide valid SSH credentials (don’t forget to consider how Host Key Verification should be set when using Spot instances).
 
