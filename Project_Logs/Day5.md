@@ -91,7 +91,7 @@ goto tomcat home directory and Add below users to conf/tomcat-users.xml file
     - id      :  `deployer`
     - Description: `user to deploy on tomcat vm`
 
-### Steps to create "Deploy_on_Tomcat_Server" Jenkin job
+### Steps to create "Deploy_WebPage_on_Tomcat_Server" Jenkin job
  #### From Jenkins home page select "New Item"
    - Enter an item name: `Deploy_on_Tomcat_Server`
      - Copy from: `My_First_Maven_Build`
